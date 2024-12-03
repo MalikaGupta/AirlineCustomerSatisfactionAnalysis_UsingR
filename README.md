@@ -37,11 +37,11 @@ The dataset includes 22 features and 129,880 rows, collected from airline passen
 ---
 
 ## Repository Contents  
-1. **R Markdown File (`analysis.Rmd`)**:  
+1. **R Markdown File (`AirlineCustomerSatisfactionAnalysis.Rmd`)**:  
    - Data cleaning, transformation, and analysis workflow.  
    - Exploratory visualizations and manipulation code.  
    - Machine learning implementation for classification.  
-2. **Shiny Dashboard File (`dashboard.R`)**:  
+2. **Shiny Dashboard File (`ShinyDashboard.R`)**:  
    - Interactive dashboard visualizations for data insights.  
    - Code to dynamically filter and explore the dataset.  
 3. **Dataset**:  
