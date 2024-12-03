@@ -1,0 +1,262 @@
+#R Project - Data Visualization and analysis
+#Malika Gupta - N01581424
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+#Summary
+```{r}
+#setwd("/C:/Users/malik/Desktop/BigData2/Big Data 2 - Project 1/ITE5424.R") #add your path
+Airline_customer_satisfaction <- read.csv("Airline_customer_satisfaction.csv")
+
+summary(Airline_customer_satisfaction)
+```
+
+```{r}
+glimpse(Airline_customer_satisfaction)
+```
+
+```{r}
+# Demonstrating the data creation process
+
+#Vector
+age_vector <- Airline_customer_satisfaction$Age
+print(age_vector)
+```
+
+```{r}
+#List
+customer_list <- list(Age = Airline_customer_satisfaction$Age,
+                      Satisfaction = Airline_customer_satisfaction$satisfaction)
+print(customer_list)
+```
+
+```{r}
+#Array
+flight_distance_array <- array(Airline_customer_satisfaction$Flight.Distance, dim = c(10, 10))
+print(flight_distance_array)
+```
+
+```{r}
+#Matrix
+flight_matrix <- matrix(Airline_customer_satisfaction$Flight.Distance, nrow = 10, ncol = 10)
+print(flight_matrix)
+```
+
+```{r}
+#Data Frame
+customer_data_frame <- data.frame(Age = Airline_customer_satisfaction$Age,
+                                  Satisfaction = Airline_customer_satisfaction$satisfaction)
+print(customer_data_frame)
+```
+
+```{r}
+# Using dplyr library for data manipulation
+
+# Arrange by Age
+arranged_data <- Airline_customer_satisfaction %>% arrange(Age)
+head(arranged_data)
+```
+
+```{r}
+# Filter where Age is greater than 50
+filtered_data <- Airline_customer_satisfaction %>% filter(Age > 50)
+head(filtered_data)
+```
+
+```{r}
+# Slice the first 10 rows
+sliced_data <- Airline_customer_satisfaction %>% slice(1:10)
+print(sliced_data)
+```
+
+```{r}
+# Mutate by creating a new column 'Age_Group'
+mutated_data <- Airline_customer_satisfaction %>% mutate(Age_Group = ifelse(Age < 30, "Young", ifelse(Age <= 60, "Adult", "Senior")))
+head(mutated_data)
+```
+
+```{r}
+# Summarize to find the average flight distance
+summary_data <- Airline_customer_satisfaction %>% summarize(Average_Flight_Distance = mean(Flight.Distance, na.rm = TRUE))
+print(summary_data)
+```
+
+```{r}
+# Using pipe to chain commands: Filter and then arrange
+filtered_arranged_data <- Airline_customer_satisfaction %>% filter(Age > 50) %>% arrange(desc(Flight.Distance))
+head(filtered_arranged_data)
+```
+
+
+```{r}
+# Charting
+#Pie Chart for Type of Travel Distribution
+ggplot(Airline_customer_satisfaction, aes(x = "", fill = Type.of.Travel)) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Type of Travel Distribution")
+```
+
+```{r}
+# Bar Chart for satisfaction by Customer Type Distribution
+# Summarise the data to get count and percentage
+library(dplyr)
+library(ggplot2)
+
+percentage_data <- Airline_customer_satisfaction %>%
+group_by(Customer.Type, satisfaction) %>%
+summarise(Count = n(), .groups = 'drop') %>%
+mutate(Percentage = Count / sum(Count) * 100)
+
+library(ggplot2)
+ggplot(Airline_customer_satisfaction, aes(x = Customer.Type, fill = satisfaction)) +
+geom_bar(position = "stack", color = "black") +
+labs(title = "Satisfaction Levels by Customer Type",
+x = "Customer Type", y = "Count") +
+scale_fill_manual(values = c("#FF6666", "#E0E0E0", "#66FF66"),
+labels = c("Dissatisfied", "Neutral", "Satisfied")) +
+theme_minimal() +
+geom_text(data = percentage_data, aes(label = paste0(round(Percentage), "%"),
+y = Count, group = satisfaction),
+position = position_stack(vjust = 0.5), color = "black")
+
+```
+
+```{r}
+# Plotting satisfaction levels by age group with counts
+library(ggplot2)
+library(dplyr)
+
+customer_data_frame <- Airline_customer_satisfaction %>%
+  mutate(Satisfaction = factor(satisfaction,
+                               levels = c("dissatisfied", "satisfied"))) %>%
+  mutate(Age_Group = cut(Age, breaks = seq(0, 100, by = 10))) %>%
+  group_by(Age_Group, Satisfaction) %>%
+  summarise(Count = n()) %>%
+  ungroup()
+
+ggplot(customer_data_frame, aes(x = Age_Group, y = Count, fill = Satisfaction)) +
+  geom_bar(stat = "identity", position = "stack", color = "black") +
+  labs(title = "Satisfaction Levels by Age Group",
+       x = "Age Group", y = "Count") +
+  scale_fill_manual(values = c("#FF6666", "#66FF66"),
+                    labels = c("Dissatisfied", "Satisfied")) +
+  theme_minimal() +
+  geom_text(aes(label = Count),
+            position = position_stack(vjust = 0.5), color = "black", size = 3)
+```
+
+```{r}
+# Box Plot for Flight Distance by Class
+ggplot(Airline_customer_satisfaction, aes(x = Class, y = Flight.Distance, fill = Class)) +
+  geom_boxplot() +
+  labs(title = "Flight Distance by Class")
+```
+
+```{r}
+#average satisfaction level on a scale of 0 to 5
+avg_satisfaction <- Airline_customer_satisfaction %>%
+  summarize(
+    Avg_Departure_Arrival_Time_Convenient = mean(Departure.Arrival.time.convenient),
+    Avg_Food_And_Drink = mean(Food.and.drink),
+    Avg_Gate_Location = mean(Gate.location),
+    Avg_Inflight_Wifi_Service = mean(Inflight.wifi.service),
+    Avg_Inflight_Entertainment = mean(Inflight.entertainment),
+    Avg_Online_Support = mean(Online.support),
+    Avg_Ease_Of_Online_Booking = mean(Ease.of.Online.booking),
+    Avg_Leg_Room_Service = mean(Leg.room.service),
+    Avg_Baggage_Handling = mean(Baggage.handling),
+    Avg_Checkin_Service = mean(Checkin.service),
+    Avg_Cleanliness = mean(Cleanliness),
+    Avg_Online_Boarding = mean(Online.boarding)
+  )
+
+# Print the results
+print(avg_satisfaction)
+```
+
+```{r}
+# Plot for Online Boarding Satisfaction - a scale of 0 to 5
+    ggplot(Airline_customer_satisfaction, aes(x = Online.boarding, fill = satisfaction)) +
+      geom_bar(position = "stack", color = "black") +
+      labs(title = "Satisfaction by Online Boarding Experience",
+           x = "Online Boarding Experience", y = "Count") +
+      scale_fill_manual(values = c("#FF6666", "#66FF66"),
+                        labels = c("Dissatisfied", "Satisfied")) +
+      theme_minimal() +
+      geom_text(stat = 'count', aes(label = ..count.., group = satisfaction), position = position_stack(vjust = 0.5), color = "black")
+```
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Calculate average departure delay for satisfied and dissatisfied customers
+delay_summary <- Airline_customer_satisfaction %>%
+  group_by(satisfaction) %>%
+  summarise(avg_departure_delay = mean(Departure.Delay.in.Minutes, na.rm = TRUE))
+
+# Plotting
+ggplot(delay_summary, aes(x = satisfaction, y = avg_departure_delay, fill = satisfaction)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.6, alpha = 0.8) +
+  labs(title = "Average Departure Delay by Customer Satisfaction",
+       x = "Customer Satisfaction",
+       y = "Average Departure Delay (minutes)") +
+  scale_fill_manual(values = c("dissatisfied" = "red", "satisfied" = "green")) +
+  theme_minimal()
+
+
+```
+
+```{r}
+# Machine Learning Classification with caret
+
+# Data Preparation
+# Convert satisfaction to a factor for classification
+# Check for missing values in the dataset
+# Summarize missing values
+library(caret)
+cat("Missing values in dataset:\n")
+print(sapply(Airline_customer_satisfaction, function(x) sum(is.na(x))))
+
+# Handle missing values (simple mean imputation for numeric columns)
+Airline_customer_satisfaction <- Airline_customer_satisfaction %>%
+  mutate_if(is.numeric, function(x) ifelse(is.na(x), mean(x, na.rm = TRUE), x))
+
+# Convert 'satisfaction' to a factor
+Airline_customer_satisfaction$satisfaction <- as.factor(Airline_customer_satisfaction$satisfaction)
+
+# Data Preparation
+# Split the data into training and testing sets
+set.seed(123)
+trainIndex <- createDataPartition(Airline_customer_satisfaction$satisfaction, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+AirlineTrain <- Airline_customer_satisfaction[ trainIndex,]
+AirlineTest  <- Airline_customer_satisfaction[-trainIndex,]
+
+# Train a Decision Tree model
+model <- train(satisfaction ~ Age + Type.of.Travel + Class + Flight.Distance + Seat.comfort + 
+                 Departure.Arrival.time.convenient + Food.and.drink + Gate.location + 
+                 Inflight.wifi.service + Inflight.entertainment + Online.support + 
+                 Ease.of.Online.booking + On.board.service + Leg.room.service + 
+                 Baggage.handling + Checkin.service + Cleanliness + Online.boarding + 
+                 Departure.Delay.in.Minutes + Arrival.Delay.in.Minutes, 
+               data = AirlineTrain, 
+               method = "rpart")
+
+# Print the model
+print(model)
+
+# Make predictions on the test data
+predictions <- predict(model, newdata = AirlineTest)
+
+# Evaluate the model
+confusionMatrix(predictions, AirlineTest$satisfaction)
+
+```
